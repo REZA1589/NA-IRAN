@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NA ایران</title>
+
+    <!-- Bootstrap 5.3.0 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- استایل اصلی شما (style.css) -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- استایل‌های اضافی — بدون خرابی -->
+    <style>
+        body {
+            background: #111;
+            color: #eee;
+            font-family: 'Vazir', Tahoma, sans-serif;
+        }
+        .text-gradient {
+            background: linear-gradient(45deg, #00d4ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+        }
+        .menu-item {
+            background: #222;
+            border: 1px solid #333;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .menu-item:hover {
+            background: #00d4ff;
+            color: #111;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 212, 255, 0.3);
+        }
+        .sub-card, .day-card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .sub-card:hover, .day-card:hover {
+            background: #00d4ff;
+            color: #111;
+            transform: translateY(-3px);
+        }
+        .back-btn {
+            background: #333;
+            color: #eee;
+            border: none;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+        .back-btn:hover {
+            background: #00d4ff;
+            color: #111;
+        }
+        .modal-content {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            color: #eee;
+        }
+        .modal-header {
+            border-bottom: 1px solid #333;
+        }
+        .btn-close-white {
+            filter: invert(1);
+        }
+        .text-display {
+            white-space: pre-line;
+            line-height: 2;
+            font-size: 1.1rem;
+            text-align: justify;
+        }
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        @media (max-width: 576px) {
+            .cards-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        /* --- مهم: جلوگیری از ستونی شدن منو --- */
+        #menu.d-none {
+            display: none !important;
+        }
+        #menu {
+            transition: opacity 0.3s ease;
+        }
+        .modal.show ~ .container #menu {
+            opacity: 0;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="p-3">
+
+<div class="container">
+    <h1 class="text-center mb-5 display-4 text-gradient">از تاریکی تا نور NA</h1>
+
+    <!-- منوی اصلی -->
+    <div id="menu" class="row g-3">
+        <div class="col-6 col-md-4">
+            <div class="menu-item card text-center p-3 rounded-4" data-target="steps">
+                <h5 class="fw-bold">۱۲ قدم</h5>
+            </div>
+        </div>
+        <div class="col-6 col-md-4">
+            <div class="menu-item card text-center p-3 rounded-4" data-target="traditions">
+                <h5 class="fw-bold">۱۲ سنت</h5>
+            </div>
+        </div>
+        <div class="col-6 col-md-4">
+            <div class="menu-item card text-center p-3 rounded-4" data-target="concepts">
+                <h5 class="fw-bold">۱۲ مفهوم</h5>
+            </div>
+        </div>
+        <div class="col-6 col-md-4">
+            <div class="menu-item card text-center p-3 rounded-4" data-target="cleanLiving">
+                <h5 class="fw-bold">پاک زیستن</h5>
+            </div>
+        </div>
+        <div class="col-6 col-md-4">
+            <div class="menu-item card text-center p-3 rounded-4" id="justForTodayBtn">
+                <h5 class="fw-bold">فقط برای امروز</h5>
+            </div>
+        </div>
+        <div class="col-6 col-md-4">
+            <div class="menu-item card text-center p-3 rounded-4" id="spiritualPrincipleBtn">
+                <h5 class="fw-bold">یک اصل روحانی</h5>
+            </div>
+        </div>
+    </div>
+
+    <!-- دکمه بازگشت -->
+    <div id="backToMenu" class="mt-4 text-center" style="display: none;">
+        <button class="btn btn-outline-light rounded-pill px-5 py-2" onclick="showMainMenu()">منوی اصلی</button>
+    </div>
+
+    <!-- محتوای پویا -->
+    <div id="content" class="mt-4"></div>
+</div>
+
+<!-- مودال‌ها -->
+<div class="modal fade" id="dailyModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold text-success" id="dailyTitle"></h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-display p-4" id="dailyText"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="principleModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold text-gradient" id="principleTitle"></h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-display p-4" id="principleText"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="listModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle"></h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="questionsContainer"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="qaModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-primary">پاسخ</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body fs-5" id="qaAnswer"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- داده‌ها -->
+<script src="data.js"></script>
+
+<!-- اپ اصلی -->
+<script src="app.js"></script>
+
+<!-- اسکریپت اصلی — کامل و بدون باگ -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // منوهای اصلی
+        document.querySelectorAll('[data-target]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const target = btn.getAttribute('data-target');
+                if (target === 'cleanLiving' && typeof showCleanLiving === 'function') showCleanLiving();
+                else if (target === 'steps' && typeof showSteps === 'function') showSteps();
+                else if (target === 'traditions' && typeof showTraditions === 'function') showTraditions();
+                else if (target === 'concepts' && typeof showConcepts === 'function') showConcepts();
+            });
+        });
+
+        // فقط برای امروز
+        document.getElementById('justForTodayBtn')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (typeof showJustForToday === 'function') showJustForToday();
+        });
+
+        // یک اصل روحانی
+        document.getElementById('spiritualPrincipleBtn')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (typeof showSpiritualPrinciple === 'function') showSpiritualPrinciple();
+        });
+    });
+
+    // تابع بازگشت به منو — ۱۰۰٪ درست
+    function showMainMenu() {
+        // ۱. بستن همه مودال‌ها
+        ['dailyModal', 'principleModal', 'listModal', 'qaModal'].forEach(id => {
+            const modalEl = document.getElementById(id);
+            if (modalEl) {
+                const modal = bootstrap.Modal.getInstance(modalEl);
+                if (modal) modal.hide();
+            }
+        });
+
+        // ۲. پاک کردن محتوا
+        document.getElementById('content').innerHTML = '';
+
+        // ۳. مخفی کردن دکمه بازگشت
+        document.getElementById('backToMenu').style.display = 'none';
+
+        // ۴. نمایش منو — بدون خرابی گرید
+        const menu = document.getElementById('menu');
+        menu.classList.remove('d-none');
+
+        // ۵. صبر تا بسته شدن مودال
+        setTimeout(() => {
+            menu.style.opacity = '1';
+        }, 300);
+    }
+</script>
+
+</body>
+</html>
